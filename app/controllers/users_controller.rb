@@ -1,11 +1,9 @@
 class UsersController < ApplicationController
-  include Pagy::Backend
-
   def index
     pagy, users = pagy(User.order(id: :desc))
     
     render json: { 
-      data: users,
+      data: ActiveModelSerializers::SerializableResource.new(users, each_serializer: UserSerializer),
       pagination: pagy_metadata(pagy)
     }
   end
@@ -13,7 +11,7 @@ class UsersController < ApplicationController
   def create
     user = User.create!(user_params)
     
-    render json: user, status: :created
+    render json: user, serializer: UserSerializer, status: :created
   end
 
   private
