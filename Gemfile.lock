@@ -150,6 +150,7 @@ GEM
     nokogiri (1.17.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    pagy (9.3.3)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -258,6 +259,7 @@ DEPENDENCIES
   debug
   importmap-rails
   jbuilder
+  pagy
   puma (>= 5.0)
   rails (~> 7.1.5, >= 7.1.5.1)
   selenium-webdriver
