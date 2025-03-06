@@ -8,5 +8,10 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  resources :users, only: [:create, :index]
+  resources :users, only: [:create, :index] do
+    resources :sleep_records, path: 'sleep-records', only: [:index] do
+      post 'clock_in', on: :collection
+      post 'clock_out', on: :collection
+    end
+  end
 end
