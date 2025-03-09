@@ -1,7 +1,7 @@
 class CreateSleepRecords < ActiveRecord::Migration[7.1]
   def change
     create_table :sleep_records do |t|
-      t.references :user, null: false, foreign_key: true, index: true
+      t.references :user, null: false, foreign_key: true
       t.datetime :clock_in, null: false
       t.datetime :clock_out
       t.integer :duration, index: true
