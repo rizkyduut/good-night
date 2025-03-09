@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     resources :sleep_records, path: 'sleep-records', only: [:index] do
       post 'clock_in', on: :collection
       post 'clock_out', on: :collection
+      get 'following', on: :collection
     end
 
     post 'follow', to: 'follows#follow'

@@ -32,6 +32,19 @@ class SleepRecordsController < ApplicationController
     render json: { message: "Success", data: SleepRecordSerializer.new(record) }, status: :ok
   end
 
+  def following
+    start_time = 1.week.ago
+    end_time = Time.current
+
+    records = SleepRecord
+                .where(user_id: @user.following.pluck(:id))
+                .where(clock_in: start_time..end_time)
+                .where.not(clock_out: nil)
+                .order(duration: :desc)
+
+    render json: { data: records }, status: :ok
+  end
+
   private
 
   def set_user
