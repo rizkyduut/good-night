@@ -5,7 +5,7 @@ class SleepRecordsController < ApplicationController
     page  = params[:page]  || 1
     limit = params[:limit] || 20
     limit = limit.to_i.clamp(1, 50)
-    pagy, records = pagy(@user.sleep_records.order(created_at: :desc), page: page, limit: limit)
+    pagy, records = pagy(@user.sleep_records.order(id: :desc), page: page, limit: limit)
 
     render json: { 
       data: ActiveModelSerializers::SerializableResource.new(records, each_serializer: SleepRecordSerializer),
@@ -29,8 +29,10 @@ class SleepRecordsController < ApplicationController
       return render json: { message: "No active sleep session" }, status: :unprocessable_entity
     end
 
+    
     now = Time.current
     record.update!(clock_out: now, duration: (now - record.clock_in).to_i)
+    Rails.cache.delete("sleep_records/#{@user.id}")
 
     render json: { message: "Success", data: SleepRecordSerializer.new(record) }, status: :ok
   end
@@ -42,11 +44,13 @@ class SleepRecordsController < ApplicationController
     page  = params[:page]  || 1
     limit = params[:limit] || 20
     limit = limit.to_i.clamp(1, 50)
-    records = SleepRecord
-                .where(user_id: @user.following.pluck(:id))
+    records = Rails.cache.fetch("sleep_records/#{@user.id}", expires_in: 10.minutes) do 
+      SleepRecord.joins(:user)
+                .where(users: { id: @user.following_ids })
                 .where(clock_in: start_time..end_time)
                 .where.not(clock_out: nil)
                 .order(duration: :desc)
+    end
     pagy, records = pagy(records, page: page, limit: limit)
 
 

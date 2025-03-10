@@ -11,6 +11,8 @@ class FollowsController < ApplicationController
     follow_relation = @user.follow_list.build(followed: followed_user)
 
     if follow_relation.save
+      Rails.cache.delete("sleep_records/#{@user.id}")
+
       render json: { message: "Successfully followed user", data: followed_user }, status: :created
     else
       render json: { message: follow_relation.errors.full_messages.first }, status: :unprocessable_entity
@@ -26,6 +28,7 @@ class FollowsController < ApplicationController
     end
 
     follow_relation.destroy
+    Rails.cache.delete("sleep_records/#{@user.id}")
 
     render json: { message: "Successfully unfollowed user" }, status: :ok
   end
