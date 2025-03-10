@@ -13,7 +13,46 @@ Good Night Service is a RESTful service that allows users to track their sleep p
 - A user cannot clock in if there is an ongoing sleep session.
 - A user cannot follow themselves.
 - Users can retrieve sleep records of people they follow, sorted by sleep duration.
-- Instead of viewing the sleep records of followed users from the previous week, this service shows the sleep records from the last 7 days for easier testing.
+- Instead of viewing the sleep records of followed users from the previous week, this service shows the sleep records from the last 7 days for easier testing. We can update the retrieval time in `app/controllers/sleep_records_controller.rb`
+
+## Database Schema
+
+### Users Table
+The `users` table has the following properties:
+- `id`: Primary key
+- `name`: String, not null
+- `created_at`: Timestamp
+- `updated_at`: Timestamp
+
+Indexes:
+- `index_users_on_name`: Index on the `name` column
+
+### Follows Table
+The `follows` table has the following properties:
+- `id`: Primary key
+- `follower_id`: References `users` table, not null
+- `followed_id`: References `users` table, not null
+- `created_at`: Timestamp
+- `updated_at`: Timestamp
+
+Indexes:
+- `index_follows_on_follower_id`: Index on the `follower_id` column
+- `index_follows_on_followed_id`: Index on the `followed_id` column
+- `index_follows_on_follower_id_and_followed_id`: Unique index on the combination of `follower_id` and `followed_id`
+
+### SleepRecords Table
+The `sleep_records` table has the following properties:
+- `id`: Primary key
+- `user_id`: References `users` table, not null
+- `clock_in`: Datetime, not null
+- `clock_out`: Datetime
+- `duration`: Integer
+- `created_at`: Timestamp
+- `updated_at`: Timestamp
+
+Indexes:
+- `index_sleep_records_on_duration`: Index on the `duration` column
+- `index_sleep_records_on_user_id_and_clock_in_and_clock_out_and_duration`: Index on the combination of `user_id`, `clock_in`, `clock_out`, and `duration` columns
 
 ## Prerequisites
 - Ruby 3.4.2

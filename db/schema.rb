@@ -29,7 +29,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_09_060136) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["duration"], name: "index_sleep_records_on_duration"
-    t.index ["user_id", "clock_in"], name: "index_sleep_records_on_user_id_and_clock_in"
+    t.index ["user_id", "clock_in", "clock_out", "duration"], name: "idx_on_user_id_clock_in_clock_out_duration_2195b04251"
     t.index ["user_id"], name: "index_sleep_records_on_user_id"
   end
 
