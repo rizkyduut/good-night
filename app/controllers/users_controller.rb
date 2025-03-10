@@ -1,11 +1,14 @@
 class UsersController < ApplicationController
   def index
-    pagy, users = pagy(User.order(id: :desc))
+    page  = params[:page]  || 1
+    limit = params[:limit] || 20
+    limit = limit.to_i.clamp(1, 50)
+    pagy, users = pagy(User.order(id: :desc), page: page, limit: limit)
     
     render json: { 
       data: ActiveModelSerializers::SerializableResource.new(users, each_serializer: UserSerializer),
       pagination: pagy_metadata(pagy)
-    }
+    }, status: :ok
   end
   
   def create

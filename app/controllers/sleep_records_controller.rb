@@ -2,12 +2,15 @@ class SleepRecordsController < ApplicationController
   before_action :set_user
 
   def index
-    pagy, records = pagy(@user.sleep_records.order(created_at: :desc))
+    page  = params[:page]  || 1
+    limit = params[:limit] || 20
+    limit = limit.to_i.clamp(1, 50)
+    pagy, records = pagy(@user.sleep_records.order(created_at: :desc), page: page, limit: limit)
 
     render json: { 
       data: ActiveModelSerializers::SerializableResource.new(records, each_serializer: SleepRecordSerializer),
       pagination: pagy_metadata(pagy)
-    }
+    }, status: :ok
   end
 
   def clock_in
@@ -36,13 +39,21 @@ class SleepRecordsController < ApplicationController
     start_time = 1.week.ago
     end_time = Time.current
 
+    page  = params[:page]  || 1
+    limit = params[:limit] || 20
+    limit = limit.to_i.clamp(1, 50)
     records = SleepRecord
                 .where(user_id: @user.following.pluck(:id))
                 .where(clock_in: start_time..end_time)
                 .where.not(clock_out: nil)
                 .order(duration: :desc)
+    pagy, records = pagy(records, page: page, limit: limit)
 
-    render json: { data: records }, status: :ok
+
+    render json: { 
+      data: records,
+      pagination: pagy_metadata(pagy)
+    }, status: :ok
   end
 
   private
