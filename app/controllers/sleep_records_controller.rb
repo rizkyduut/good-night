@@ -51,7 +51,7 @@ class SleepRecordsController < ApplicationController
 
 
     render json: { 
-      data: records,
+      data: ActiveModelSerializers::SerializableResource.new(records, each_serializer: SleepRecordSerializer),
       pagination: pagy_metadata(pagy)
     }, status: :ok
   end
